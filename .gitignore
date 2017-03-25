@@ -1,0 +1,13 @@
+*.dll
+*.exe
+*.db
+*.sln
+*.sdf
+*.ipch
+*.filters
+*.user
+*.vcxproj
+*.lib
+Chat/Debug
+Chat/Chat/Debug
+Chat/Chat/data
