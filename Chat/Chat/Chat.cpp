@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 		WIDTH,
 		HEIGHT,
 		user);
-	MainPage *main = new MainPage(new ChatBox((WIDTH/2)-(WIDTH/4),HEIGHT/5,WIDTH/2,HEIGHT*(2/3),30,user),
+	MainPage *main = new MainPage(new ChatBox((WIDTH / 2) - (WIDTH / 4), HEIGHT / 5, WIDTH / 2, HEIGHT*(2 / 3), 30, user),
 		WIDTH,
 		HEIGHT,
 		user);

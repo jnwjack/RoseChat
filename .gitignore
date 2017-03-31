@@ -8,6 +8,12 @@
 *.user
 *.vcxproj
 *.lib
+*.zip
+*.suo
 Chat/Debug
+Debug
 Chat/Chat/Debug
+Chat/include
+Chat/lib
+data/users
 Chat/Chat/data

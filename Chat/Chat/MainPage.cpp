@@ -7,7 +7,7 @@ void MainPage::backCallback(Fl_Widget *widget)
 
 void MainPage::connectCallback(Fl_Widget *widget)
 {
-	dialogBox = new ConnectDialog(window->x() + (window->w()/3),window->y() + (window->h()/3),window);
+	dialogBox = new ConnectDialog(window->x() + (window->w()/3),window->y() + (window->h()/3),window,user);
 	dialogBox->show();
 }
 

@@ -1,11 +1,10 @@
 #pragma once
-#include <boost\asio.hpp>
+#include "Participant.h"
 #include <boost\bind.hpp>
 #include <thread>
 #include <iostream>
 #include <vector>
 #include <memory>
-#include <string>
 #include <FL\Fl_Text_Buffer.H>
 
 using boost::asio::ip::tcp;
@@ -19,6 +18,7 @@ class Server
 	const char *roomName;
 	const char *roomPassword;
 	bool alive;
+	std::vector<Participant> *participants;
 	Fl_Text_Buffer *chatBuffer;
 public:
 	Server();

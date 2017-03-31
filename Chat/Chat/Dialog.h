@@ -1,4 +1,5 @@
 #pragma once
+#include "UserData.h"
 #include <FL\Fl.H>
 #include <FL\Fl_Window.H>
 #include <FL\Fl_Input.H>
@@ -13,6 +14,7 @@ class Dialog : public Fl_Window
 
 protected:
 	Fl_Window *otherWindow;
+	UserData *user;
 
 public:
 	Dialog(int,int,char*,Fl_Window*);

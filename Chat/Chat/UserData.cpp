@@ -33,7 +33,7 @@ Client* UserData::getClient()
 
 UserData::UserData()
 {
-
+	server = nullptr;
 }
 
 

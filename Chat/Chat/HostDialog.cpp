@@ -22,7 +22,7 @@ HostDialog::HostDialog(int x, int y, Fl_Window *ptr, std::thread *threadptr, Use
 
 	user = udata;
 
-	if(!user->getServer())
+	if (user->getServer() == nullptr)
 		user->setServer(new Server());
 
 	port->value("7673");

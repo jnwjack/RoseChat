@@ -3,6 +3,7 @@
 Server::Server()
 {
 	chatBuffer = new Fl_Text_Buffer();
+	participants = new std::vector<Participant>();
 }
 
 void Server::config(const char *name, const char* password, const char *p)
@@ -38,6 +39,16 @@ void Server::start()
 			tcp::socket socket(*io);
 			acceptor->accept(socket); // wait for connection
 			size_t len = socket.read_some(boost::asio::buffer(buf), error);
+
+			std::string tempAddress = socket.remote_endpoint().address().to_string();
+			/*for (std::vector<Participant>::iterator it = participants->begin(); it != participants->end(); it++)
+			{
+				if (tempAddress.compare(it->getAddress())) // if strings are not equal
+				{
+					participants->push_back(Participant(&socket));
+					break;
+				}
+			}*/
 			buf[len] = '\0';
 
 			if (error == boost::asio::error::eof)
