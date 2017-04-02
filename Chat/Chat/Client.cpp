@@ -11,7 +11,7 @@ void Client::send(const char *string)
 	}
 	catch (std::exception &e)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cerr << "Client-side error: " << e.what() << std::endl;
 	}
 }
 
@@ -19,16 +19,18 @@ void Client::accept()
 {
 	while (true)
 	{
-		char buf[150];
+		char buf[128];
 		strcpy_s(buf, "");
 
-		tcp::socket acceptorSocket(*acceptingio);
+		tcp::socket acceptorSocket(*io);
 		
 		boost::system::error_code error;
 
 		acceptor->accept(acceptorSocket);
 		std::cout << "hit";
 		size_t len = acceptorSocket.read_some(boost::asio::buffer(buf), error);
+
+		buf[len] = '\0';
 
 		if (error == boost::asio::error::eof)
 			buffer->append("Someone left.");
@@ -63,7 +65,7 @@ void Client::config(const char *port, const char *host)
 
 		endpointIterator = resolver.resolve(*query);
 
-		acceptor = std::shared_ptr<tcp::acceptor>(new tcp::acceptor(*acceptingio, tcp::endpoint(tcp::v4(), (int)port + 1)));
+		acceptor = std::shared_ptr<tcp::acceptor>(new tcp::acceptor(*io, tcp::endpoint(tcp::v4(), ((int)port)+1)));
 	}
 	catch(std::exception &e)
 	{
@@ -75,7 +77,6 @@ Client::Client()
 {
 	buffer = new Fl_Text_Buffer();
 	io = new boost::asio::io_service();
-	acceptingio = new boost::asio::io_service();
 }
 
 /*Client::Client(const char *port, const char *host)

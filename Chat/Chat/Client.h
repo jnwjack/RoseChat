@@ -9,7 +9,6 @@ using boost::asio::ip::tcp;
 class Client
 {
 	boost::asio::io_service *io;
-	boost::asio::io_service *acceptingio;
 	tcp::resolver::iterator endpointIterator;
 	tcp::socket *socket;
 	Fl_Text_Buffer *buffer;
