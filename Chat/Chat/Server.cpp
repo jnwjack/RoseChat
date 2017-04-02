@@ -41,24 +41,25 @@ void Server::start()
 			size_t len = socket.read_some(boost::asio::buffer(buf), error);
 
 			std::string tempAddress = socket.remote_endpoint().address().to_string();
-			/*for (std::vector<Participant>::iterator it = participants->begin(); it != participants->end(); it++)
+			if (participants->size() == 0)
 			{
-				if (tempAddress.compare(it->getAddress())) // if strings are not equal
-				{
-					participants->push_back(Participant(&socket));
-					break;
-				}
-			}*/
-			buf[len] = '\0';
-
-			if (error == boost::asio::error::eof)
-				chatBuffer->append("Someone left.");
-			else if (error)
-				throw boost::system::system_error(error);
+				participants->push_back(Participant(tempAddress.c_str(), std::to_string(port+1).c_str()));
+			}
 			else
 			{
-				chatBuffer->append(buf);
-				chatBuffer->append("\n");
+				for (std::vector<Participant>::iterator it = participants->begin(); it != participants->end(); it++)
+				{
+					if (tempAddress.compare(it->getAddress())) // if strings are not equal
+					{
+						participants->push_back(Participant(tempAddress.c_str(), std::to_string(port+1).c_str()));
+						break;
+					}
+				}
+			}
+			buf[len] = '\0';
+			for (std::vector<Participant>::iterator it = participants->begin(); it != participants->end(); it++)
+			{
+				it->send(std::string(buf));
 			}
 		}
 	}

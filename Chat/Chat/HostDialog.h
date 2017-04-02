@@ -9,6 +9,7 @@ class HostDialog : public Dialog
 	Fl_Input *port;
 	Fl_Button *submit;
 	std::thread *serverThread;
+	std::thread *clientThread;
 
 	void buttonCallback(Fl_Widget*);
 
@@ -17,7 +18,7 @@ class HostDialog : public Dialog
 		((HostDialog*)data)->buttonCallback(widget);
 	}
 public:
-	HostDialog(int,int,Fl_Window*,std::thread*,UserData*);
+	HostDialog(int,int,Fl_Window*,std::thread*,std::thread*,UserData*);
 	~HostDialog();
 };
 

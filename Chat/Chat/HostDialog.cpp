@@ -2,19 +2,21 @@
 
 void HostDialog::buttonCallback(Fl_Widget *widget)
 {
+	user->setServer(new Server());
 	user->getServer()->config(name->value(), password->value(), port->value());
 	serverThread = new std::thread(&Server::start, user->getServer());
 
-	Client *client = new Client(port->value());
-	user->setClient(client);
+	user->getClient()->config(port->value());
+	clientThread = new std::thread(&Client::accept, user->getClient());
 
 	otherWindow->activate();
 	Fl::delete_widget(this);
 }
 
-HostDialog::HostDialog(int x, int y, Fl_Window *ptr, std::thread *threadptr, UserData *udata) : Dialog(x,y,"Host chatroom",ptr)
+HostDialog::HostDialog(int x, int y, Fl_Window *ptr, std::thread *firstThread, std::thread *secondThread, UserData *udata) : Dialog(x,y,"Host chatroom",ptr)
 {
-	serverThread = threadptr;
+	serverThread = firstThread;
+	clientThread = secondThread;
 	name = new Fl_Input(this->w()/2, 0, this->w() / 2, this->h() / 6,"Server name:");
 	password = new Fl_Input(this->w()/2, this->h()/4, this->w() / 2, this->h() / 6, "Server password:");
 	port = new Fl_Input(this->w()/2, this->h()/2, this->w() / 2, this->h() / 6, "Port:");
@@ -22,8 +24,8 @@ HostDialog::HostDialog(int x, int y, Fl_Window *ptr, std::thread *threadptr, Use
 
 	user = udata;
 
-	if (user->getServer() == nullptr)
-		user->setServer(new Server());
+	if (user->getClient() == nullptr)
+		user->setClient(new Client());
 
 	port->value("7673");
 

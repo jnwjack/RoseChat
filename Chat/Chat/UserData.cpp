@@ -2,7 +2,7 @@
 
 Fl_Text_Buffer* UserData::getChatBuffer()
 {
-	return server->getBuffer();
+	return client->getBuffer();
 }
 
 void UserData::setServer(Server *s)
@@ -34,6 +34,7 @@ Client* UserData::getClient()
 UserData::UserData()
 {
 	server = nullptr;
+	client = nullptr;
 }
 
 

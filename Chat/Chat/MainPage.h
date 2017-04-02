@@ -31,6 +31,7 @@ class MainPage : public Page
 	Fl_Button *host;
 	Dialog *dialogBox;
 	std::thread *serverThread;
+	std::thread *clientThread;
 public:
 	void reset();
 	MainPage(ChatBox*,int,int,UserData*);

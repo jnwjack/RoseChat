@@ -2,14 +2,14 @@
 
 std::string Participant::getAddress()
 {
-	return address;
+	return (std::string)address;
 }
 
 void Participant::send(std::string message)
 {
 	try
 	{
-		boost::asio::connect(*socket, *endpointIterator);
+		boost::asio::connect(*socket, endpointIterator);
 		socket->write_some(boost::asio::buffer(message));
 	}
 	catch (std::exception &e)
@@ -24,15 +24,15 @@ void Participant::send(std::string message)
 	address = socket->remote_endpoint().address().to_string();
 }*/
 
-Participant::Participant(const char *addr, const char *port, boost::asio::io_service *io)
+Participant::Participant(const char *addr, const char *port)
 {
+	io = new boost::asio::io_service();
 	address = addr;
-
+	std::cout << port;
 	tcp::resolver resolver(*io);
-	tcp::resolver::query query (address, port);
-	*endpointIterator = resolver.resolve(query);
-
-
+	tcp::resolver::query query(addr, port);
+	socket = new tcp::socket(*io);
+	endpointIterator = resolver.resolve(query);
 }
 
 
