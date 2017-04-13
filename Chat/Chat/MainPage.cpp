@@ -13,7 +13,8 @@ void MainPage::connectCallback(Fl_Widget *widget)
 
 void MainPage::hostCallback(Fl_Widget *widget)
 {
-	dialogBox = new HostDialog(window->x() + (window->w() / 3), window->y() + (window->h() / 3), window, serverThread, clientThread, user);
+	dialogBox = new HostDialog(window->x() + (window->w() / 3), window->y() + (window->h() / 3), window, 
+		serverThread, clientThread, serverIoThread, clientIoThread, user);
 	dialogBox->show();
 	chatbox->setBuffer(user->getChatBuffer());
 	chatbox->turnOn();

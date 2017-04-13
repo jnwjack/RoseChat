@@ -1,112 +1,131 @@
 #include "Client.h"
-
-void Client::send(const char *string)
+Client::Client(boost::asio::io_service& io,
+	tcp::resolver::iterator endpointIterator)
+	: ioService(io), socket(io)
 {
-	std::string message(string);
-
-	try
-	{
-		boost::asio::connect(*socket, endpointIterator);
-		socket->write_some(boost::asio::buffer(message));
-	}
-	catch (std::exception &e)
-	{
-		std::cerr << "Client-side error: " << e.what() << std::endl;
-	}
+	buffer = new Fl_Text_Buffer();
+	tempIterator = endpointIterator;
 }
 
-void Client::accept()
+void Client::config()
 {
-	while (true)
+	connect(tempIterator);
+	//ioService.run();
+}
+
+void Client::run()
+{
+
+}
+
+boost::asio::io_service& Client::getIoService()
+{
+	return ioService;
+}
+
+Client::~Client()
+{
+
+}
+
+void Client::write(const Message& message)
+{
+	ioService.post(
+	[this, message]()
 	{
-		char buf[128];
-		strcpy_s(buf, "");
+		std::cout << "writing...";
+		bool writeInProgress = !writeMessages.empty();
+		writeMessages.push_back(message);
+		if (!writeInProgress)
+		{
+			doWrite();
+		}
+	});
+}
 
-		tcp::socket acceptorSocket(*io);
-		
-		boost::system::error_code error;
-
-		acceptor->accept(acceptorSocket);
-		std::cout << "hit";
-		size_t len = acceptorSocket.read_some(boost::asio::buffer(buf), error);
-
-		buf[len] = '\0';
-
-		if (error == boost::asio::error::eof)
-			buffer->append("Someone left.");
-		else if (error)
-			throw boost::system::system_error(error);
+void Client::doWrite()
+{
+	boost::asio::async_write(socket,
+		boost::asio::buffer(writeMessages.front().getData(),
+			writeMessages.front().getLength()),
+		[this](boost::system::error_code error, std::size_t len)
+	{
+		if (!error)
+		{
+			writeMessages.pop_front();
+			if (!writeMessages.empty())
+			{
+				doWrite();
+			}
+		}
 		else
 		{
-			buffer->append(buf);
-			buffer->append("\n");
+			socket.close();
 		}
-	}
+	});
+}
+
+void Client::connect(tcp::resolver::iterator endpointIterator)
+{
+	boost::asio::async_connect(socket, endpointIterator,
+		[this](boost::system::error_code error, tcp::resolver::iterator)
+	{
+		if (!error)
+		{
+			readHeader();
+		}
+		else
+		{
+			socket.close();
+		}
+	});
+}
+
+void Client::close()
+{
+	ioService.post([this]() {socket.close(); });
+}
+
+void Client::readHeader()
+{
+	std::cout << "hit";
+	boost::asio::async_read(socket,
+		boost::asio::buffer(readMessage.getData(), Message::HEADER_LENGTH),
+		[this](boost::system::error_code error, std::size_t len)
+	{
+		std::cout << "hit";
+		if (!error && readMessage.decodeHeader())
+		{
+			readBody();
+		}
+		else
+		{
+			socket.close();
+		}
+	});
+}
+
+void Client::readBody()
+{
+	boost::asio::async_read(socket,
+		boost::asio::buffer(readMessage.getBody(),readMessage.bodyLength()),
+		[this](boost::system::error_code error, std::size_t len)
+	{
+		if (!error)
+		{
+			buffer->append(readMessage.getBody());
+			buffer->append("\n");
+
+			readHeader();
+		}
+		else
+		{
+			socket.close();
+		}
+	});
 }
 
 Fl_Text_Buffer* Client::getBuffer()
 {
 	return buffer;
-}
-
-void Client::config(const char *port, const char *host)
-{
-	try
-	{
-		tcp::resolver resolver(*io);
-		tcp::resolver::query *query;
-
-		if (host)
-			query = new tcp::resolver::query(host, port);
-		else
-			query = new tcp::resolver::query(boost::asio::ip::host_name(), port);
-
-		socket = new tcp::socket(*io);
-
-		endpointIterator = resolver.resolve(*query);
-
-		acceptor = std::shared_ptr<tcp::acceptor>(new tcp::acceptor(*io, tcp::endpoint(tcp::v4(), ((int)port)+1)));
-	}
-	catch(std::exception &e)
-	{
-		std::cerr << e.what() << std::endl;
-	}
-}
-
-Client::Client()
-{
-	buffer = new Fl_Text_Buffer();
-	io = new boost::asio::io_service();
-}
-
-/*Client::Client(const char *port, const char *host)
-{
-	buffer = new Fl_Text_Buffer();
-	try
-	{
-		io = new boost::asio::io_service;
-
-		tcp::resolver resolver(*io);
-		tcp::resolver::query *query;
-
-		if (host)
-			query = new tcp::resolver::query(host, port);
-		else
-			query = new tcp::resolver::query(boost::asio::ip::host_name(), port);
-
-		socket = new tcp::socket(*io);
-
-		endpointIterator = resolver.resolve(*query);
-
-		acceptor = std::shared_ptr<tcp::acceptor>(new tcp::acceptor(*io, tcp::endpoint(tcp::v4(), (int)port)));
-	}
-	catch (std::exception &e)
-	{
-		std::cerr << e.what() << std::endl;
-	}
-}*/
-
-
-Client::~Client()
-{
 }

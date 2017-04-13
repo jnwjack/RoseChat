@@ -1,42 +1,114 @@
 #include "Participant.h"
 
-std::string Participant::getAddress()
+/*void Participant::handleWrite(const boost::system::error_code& error)
 {
-	return (std::string)address;
+	if (!error)
+	{
+		writeMessages.pop_front();
+		if (!writeMessages.empty())
+		{
+			boost::asio::async_write(socket,
+				boost::asio::buffer(writeMessages.front(),
+					writeMessages.front().length()),
+				boost::bind(&Participant::handleWrite, shared_from_this(),
+					boost::asio::placeholders::error));
+		}
+	}
+	else
+	{
+		room.leave(shared_from_this());
+	}
 }
 
-/*void Participant::send(std::string message)
+void Participant::handleRead(const boost::system::error_code& error)
 {
-	try
+	if (!error)
 	{
-		boost::asio::connect(*socket, endpointIterator);
-		socket->write_some(boost::asio::buffer(message));
-	}
-	catch (std::exception &e)
-	{
-		std::cerr << e.what() << std::endl;
+		room.deliver(readMessage);
+		boost::asio::async_read
 	}
 }*/
 
-/*Participant::Participant(tcp::socket *s)
+void Participant::deliver(const Message& message)
 {
-	socket = s;
-	address = socket->remote_endpoint().address().to_string();
-}*/
-
-tcp::resolver::iterator Participant::getIterator()
-{
-	return endpointIterator;
+	bool writeInProgress = !writeMessages.empty();
+	writeMessages.push_back(message);
+	if (!writeInProgress)
+	{
+		write();
+	}
 }
 
-Participant::Participant(const char *addr, const char *port, boost::asio::io_service *io)
+void Participant::write()
 {
-	address = addr;
-	tcp::resolver resolver(*io);
-	tcp::resolver::query query(addr, port);
-	endpointIterator = resolver.resolve(query);
+	auto self(shared_from_this());
+	boost::asio::async_write(socket,
+		boost::asio::buffer(writeMessages.front().getData(),
+			writeMessages.front().getLength()),
+		[this, self](boost::system::error_code error, std::size_t len)
+	{
+		if (!error)
+		{
+			writeMessages.pop_front();
+			if (!writeMessages.empty())
+			{
+				write();
+			}
+		}
+		else
+		{
+			room.leave(shared_from_this());
+		}
+	});
 }
 
+
+void Participant::start()
+{
+	room.join(shared_from_this());
+	readHeader();
+}
+
+void Participant::readHeader()
+{
+	auto self(shared_from_this());
+	boost::asio::async_read(socket,
+		boost::asio::buffer(readMessage.getData(),Message::HEADER_LENGTH),
+		[this, self](boost::system::error_code error, std::size_t len)
+	{
+		if (!error && readMessage.decodeHeader())
+		{
+			readBody();
+		}
+		else
+		{
+			room.leave(shared_from_this());
+		}
+	});
+}
+
+void Participant::readBody()
+{
+	auto self(shared_from_this());
+	boost::asio::async_read(socket,
+		boost::asio::buffer(readMessage.getBody(),readMessage.bodyLength()),
+		[this, self](boost::system::error_code error, std::size_t len)
+	{
+		if (!error)
+		{
+			room.deliver(readMessage);
+			readHeader();
+		}
+		else
+		{
+			room.leave(shared_from_this());
+		}
+	});
+}
+
+Participant::Participant(tcp::socket s, Room& r) : socket(std::move(s)),room(r)
+{
+}
 
 Participant::~Participant()
 {

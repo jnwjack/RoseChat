@@ -8,10 +8,16 @@ void ChatBox::turnOn()
 
 void ChatBox::sendCallback(Fl_Widget *widget)
 {
-	const char *message = input->value();
-	if (message != "")
+	const char* toSend = input->value();
+
+	if (toSend != "")
 	{
-		user->getClient()->send(message);
+		Message message;
+
+		message.bodyLength(std::strlen(toSend));
+		std::memcpy(message.getBody(), toSend, message.bodyLength());
+		message.encodeHeader();
+		user->getClient()->write(message);	// LEFT OFF HERE
 		input->value("");
 	}
 	displayBox->redraw();

@@ -30,8 +30,11 @@ class MainPage : public Page
 	Fl_Button *back;
 	Fl_Button *host;
 	Dialog *dialogBox;
+
 	std::thread *serverThread;
 	std::thread *clientThread;
+	std::thread *serverIoThread;
+	std::thread *clientIoThread;
 public:
 	void reset();
 	MainPage(ChatBox*,int,int,UserData*);

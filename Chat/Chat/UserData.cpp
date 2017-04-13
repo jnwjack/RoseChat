@@ -15,6 +15,16 @@ void UserData::setClient(Client *c)
 	client = c;
 }
 
+void UserData::setIoServer(boost::asio::io_service *io)
+{
+	ioServer = io;
+}
+
+void UserData::setIoClient(boost::asio::io_service *io)
+{
+	ioClient = io;
+}
+
 Server* UserData::getServer()
 {
 	return server;

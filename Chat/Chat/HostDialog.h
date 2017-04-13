@@ -2,6 +2,8 @@
 #include "Dialog.h"
 #include <thread>
 #include <iostream>
+#include <functional>
+#include <string>
 class HostDialog : public Dialog
 {
 	Fl_Input *name;
@@ -10,6 +12,10 @@ class HostDialog : public Dialog
 	Fl_Button *submit;
 	std::thread *serverThread;
 	std::thread *clientThread;
+	std::thread *serverIoThread;
+	std::thread *clientIoThread;
+	boost::asio::io_service *ioServer;
+	boost::asio::io_service *ioClient;
 
 	void buttonCallback(Fl_Widget*);
 
@@ -17,8 +23,13 @@ class HostDialog : public Dialog
 	{
 		((HostDialog*)data)->buttonCallback(widget);
 	}
+	void startServer();
+
+	void startClient();
+
 public:
-	HostDialog(int,int,Fl_Window*,std::thread*,std::thread*,UserData*);
+
+	HostDialog(int,int,Fl_Window*,std::thread*,std::thread*,std::thread*,std::thread*,UserData*);
 	~HostDialog();
 };
 

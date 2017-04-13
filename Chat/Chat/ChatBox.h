@@ -1,7 +1,9 @@
 #pragma once
 #include "UserData.h"
 #include "Section.h"
+#include "Message.h"
 #include <iostream>
+#include <string>
 #include <FL\Fl_Text_Display.H>
 #include <FL\Fl_Input.H>
 #include <FL\Fl_Text_Buffer.H>
