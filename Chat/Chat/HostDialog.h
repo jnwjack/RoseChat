@@ -1,6 +1,5 @@
 #pragma once
 #include "Dialog.h"
-#include <thread>
 #include <iostream>
 #include <functional>
 #include <string>
@@ -16,6 +15,9 @@ class HostDialog : public Dialog
 	std::thread *clientIoThread;
 	boost::asio::io_service *ioServer;
 	boost::asio::io_service *ioClient;
+
+	bool clientThreadAlive;
+	bool serverThreadAlive;
 
 	void buttonCallback(Fl_Widget*);
 

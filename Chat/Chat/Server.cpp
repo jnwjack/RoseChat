@@ -11,7 +11,6 @@ boost::asio::io_service& Server::getIoService()
 
 void Server::start()
 {
-	std::cout << "fhafjef";
 	acceptor.async_accept(socket,
 		[this](boost::system::error_code error)
 	{

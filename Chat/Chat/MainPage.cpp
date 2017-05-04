@@ -7,17 +7,25 @@ void MainPage::backCallback(Fl_Widget *widget)
 
 void MainPage::connectCallback(Fl_Widget *widget)
 {
-	dialogBox = new ConnectDialog(window->x() + (window->w()/3),window->y() + (window->h()/3),window,user);
-	dialogBox->show();
+	if (!user->clientIsAlive())
+	{
+		dialogBox = new ConnectDialog(window->x() + (window->w() / 3), window->y() + (window->h() / 3), window, clientThread, user);
+		dialogBox->show();
+		chatbox->setBuffer(user->getChatBuffer());
+		chatbox->turnOn();
+	}
 }
 
 void MainPage::hostCallback(Fl_Widget *widget)
 {
-	dialogBox = new HostDialog(window->x() + (window->w() / 3), window->y() + (window->h() / 3), window, 
-		serverThread, clientThread, serverIoThread, clientIoThread, user);
-	dialogBox->show();
-	chatbox->setBuffer(user->getChatBuffer());
-	chatbox->turnOn();
+	if (!user->clientIsAlive())
+	{
+		dialogBox = new HostDialog(window->x() + (window->w() / 3), window->y() + (window->h() / 3), window,
+			serverThread, clientThread, serverIoThread, clientIoThread, user);
+		dialogBox->show();
+		chatbox->setBuffer(user->getChatBuffer());
+		chatbox->turnOn();
+	}
 }
 
 void MainPage::reset()
@@ -49,4 +57,5 @@ MainPage::~MainPage()
 {
 	Fl::delete_widget(dialogBox);
 	serverThread->join();
+	clientThread->join();
 }

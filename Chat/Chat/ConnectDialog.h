@@ -7,15 +7,19 @@ class ConnectDialog : public Dialog
 	Fl_Input *password;
 	Fl_Input *port;
 
-	void buttonCallback(Fl_Widget*);
+	boost::asio::io_service *io;
 
+	std::thread *clientThread;
+
+	void buttonCallback(Fl_Widget*);
+	void startClient();
 	static void buttonCallback_s(Fl_Widget *widget, void *data)
 	{
 		((ConnectDialog*)data)->buttonCallback(widget);
 	}
 
 public:
-	ConnectDialog(int,int, Fl_Window*,UserData*);
+	ConnectDialog(int,int, Fl_Window*, std::thread*, UserData*);
 	~ConnectDialog();
 };
 

@@ -35,6 +35,26 @@ Client* UserData::getClient()
 	return client;
 }
 
+void UserData::setServerAlive(bool b)
+{
+	serverAlive = b;
+}
+
+void UserData::setClientAlive(bool b)
+{
+	clientAlive = b;
+}
+
+bool UserData::serverIsAlive()
+{
+	return serverAlive;
+}
+
+bool UserData::clientIsAlive()
+{
+	return clientAlive;
+}
+
 /*ChatWindow* UserData::getWindow()
 {
 	return window;
@@ -45,6 +65,8 @@ UserData::UserData()
 {
 	server = nullptr;
 	client = nullptr;
+	clientAlive = false;
+	serverAlive = false;
 }
 
 

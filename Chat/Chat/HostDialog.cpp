@@ -7,40 +7,28 @@ void HostDialog::buttonCallback(Fl_Widget *widget)
 	tcp::endpoint endpoint(tcp::v4(), std::atoi(port->value()));
 	user->setServer(new Server(*ioServer,endpoint));
 	serverThread = new std::thread(&HostDialog::startServer, this);
-	//serverThread->join();
-	//ioServer.run();
-	//user->getServer()->start();
-	//serverIoThread = new std::thread([&ioServer]() {ioServer.run(); });
-
 	clientThread = new std::thread(&HostDialog::startClient, this);
-	//clientThread->join();
-	//user->getClient()->getIoService().run();
-	
-	//user->getClient()->config();
-	//boost::asio::io_service& io_service = user->getClient()->getIoService();
-	//clientIoThread = new std::thread([&io_service]() {io_service.run(); });
-
-
 	otherWindow->activate();
 	//Fl::delete_widget(this);
+	this->hide();
 }
 
 
 void HostDialog::startClient()
 {
 	user->getClient()->config();
-	while (true)
+	user->setClientAlive(true);
+	while (user->clientIsAlive())
 	{
 		ioClient->run();
 		ioClient->reset();
 	}
-	//std::thread t(&boost::asio::io_service::run,ioClient);
-	//t.detach();
 }
 
 void HostDialog::startServer()
 {
 	user->getServer()->start();
+	user->setServerAlive(true);
 	ioServer->run();
 }
 
@@ -61,16 +49,11 @@ HostDialog::HostDialog(int x, int y, Fl_Window *ptr, std::thread *firstThread, s
 
 	port->value("7673");
 
-	if (user->getClient() == nullptr)
-	{
-		ioClient = new boost::asio::io_service();
-		user->setIoClient(ioClient);
-		tcp::resolver resolver(*ioClient);
-		//auto endpointIterator = resolver.resolve({ boost::asio::ip::host_name(),port->value() });
-		auto endpointIterator = resolver.resolve({ "192.168.1.17",port->value() });
-		//std::cout << boost::asio::ip::host_name();
-		user->setClient(new Client(*ioClient, endpointIterator));
-	}
+	ioClient = new boost::asio::io_service();
+	user->setIoClient(ioClient);
+	tcp::resolver resolver(*ioClient);
+	auto endpointIterator = resolver.resolve({ boost::asio::ip::host_name(),port->value() });
+	user->setClient(new Client(*ioClient, endpointIterator));
 
 	submit->callback((Fl_Callback*)&HostDialog::buttonCallback_s, (void*)this);
 

@@ -33,7 +33,6 @@ void Client::write(const Message& message)
 	ioService.post(
 	[this, message]()
 	{
-		std::cout << "writing...";
 		bool writeInProgress = !writeMessages.empty();
 		writeMessages.push_back(message);
 		if (!writeInProgress)
@@ -72,6 +71,9 @@ void Client::connect(tcp::resolver::iterator endpointIterator)
 	{
 		if (!error)
 		{
+			buffer->append("Connected to ");
+			buffer->append(socket.remote_endpoint().address().to_string().c_str());
+			buffer->append("\n");
 			readHeader();
 		}
 		else
@@ -88,12 +90,10 @@ void Client::close()
 
 void Client::readHeader()
 {
-	std::cout << "hit";
 	boost::asio::async_read(socket,
 		boost::asio::buffer(readMessage.getData(), Message::HEADER_LENGTH),
 		[this](boost::system::error_code error, std::size_t len)
 	{
-		std::cout << "hit";
 		if (!error && readMessage.decodeHeader())
 		{
 			readBody();
@@ -113,7 +113,9 @@ void Client::readBody()
 	{
 		if (!error)
 		{
-			buffer->append(readMessage.getBody());
+			std::string str(readMessage.getBody());
+			std::string sub = str.substr(0, readMessage.bodyLength());
+			buffer->append(sub.c_str());
 			buffer->append("\n");
 
 			readHeader();
