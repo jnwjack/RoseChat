@@ -1,9 +1,9 @@
 #include "Client.h"
 Client::Client(boost::asio::io_service& io,
-	tcp::resolver::iterator endpointIterator)
+	tcp::resolver::iterator endpointIterator, Fl_Text_Buffer *buf)
 	: ioService(io), socket(io)
 {
-	buffer = new Fl_Text_Buffer();
+	buffer = buf;
 	tempIterator = endpointIterator;
 }
 

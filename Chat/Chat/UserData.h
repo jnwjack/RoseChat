@@ -12,6 +12,7 @@ class UserData
 	boost::asio::io_service *ioClient;
 	bool serverAlive;
 	bool clientAlive;
+	Fl_Text_Buffer *buffer;
 	//ChatWindow *window;
 	const char* username;
 	//TODO: store username and password and preferences
@@ -25,6 +26,8 @@ public:
 	void setClientAlive(bool);
 	bool serverIsAlive();
 	bool clientIsAlive();
+	void setUsername(const char*);
+	const char* getUsername();
 
 	Server* getServer();
 	Client* getClient();

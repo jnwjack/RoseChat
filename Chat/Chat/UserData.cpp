@@ -2,7 +2,7 @@
 
 Fl_Text_Buffer* UserData::getChatBuffer()
 {
-	return client->getBuffer();
+	return buffer;
 }
 
 void UserData::setServer(Server *s)
@@ -60,6 +60,16 @@ bool UserData::clientIsAlive()
 	return window;
 }*/
 
+void UserData::setUsername(const char* str)
+{
+	username = str;
+}
+
+const char* UserData::getUsername()
+{
+	return username;
+}
+
 
 UserData::UserData()
 {
@@ -67,6 +77,7 @@ UserData::UserData()
 	client = nullptr;
 	clientAlive = false;
 	serverAlive = false;
+	buffer = new Fl_Text_Buffer();
 }
 
 

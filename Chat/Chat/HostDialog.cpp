@@ -53,7 +53,7 @@ HostDialog::HostDialog(int x, int y, Fl_Window *ptr, std::thread *firstThread, s
 	user->setIoClient(ioClient);
 	tcp::resolver resolver(*ioClient);
 	auto endpointIterator = resolver.resolve({ boost::asio::ip::host_name(),port->value() });
-	user->setClient(new Client(*ioClient, endpointIterator));
+	user->setClient(new Client(*ioClient, endpointIterator, user->getChatBuffer()));
 
 	submit->callback((Fl_Callback*)&HostDialog::buttonCallback_s, (void*)this);
 

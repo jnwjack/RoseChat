@@ -28,7 +28,7 @@ public:
 	void config();
 	void run();
 	Fl_Text_Buffer* getBuffer();
-	Client(boost::asio::io_service&,tcp::resolver::iterator);
+	Client(boost::asio::io_service&,tcp::resolver::iterator, Fl_Text_Buffer*);
 	~Client();
 };
 

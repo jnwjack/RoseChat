@@ -2,6 +2,11 @@
 
 void ConnectDialog::buttonCallback(Fl_Widget *widget)
 {
+	io = new boost::asio::io_service();
+	user->setIoClient(io);
+	tcp::resolver resolver(*io);
+	auto endpointIterator = resolver.resolve({ address->value(),port->value() });
+	user->setClient(new Client(*io, endpointIterator,user->getChatBuffer()));
 	clientThread = new std::thread(&ConnectDialog::startClient, this);
 	otherWindow->activate();
 	//Fl::delete_widget(this);
@@ -12,10 +17,10 @@ void ConnectDialog::startClient()
 {
 	user->getClient()->config();
 	user->setClientAlive(true);
-	while (true)
+	while (user->clientIsAlive())
 	{
 		io->run();
-		//io->reset();
+		io->reset();
 	}
 }
 
@@ -34,12 +39,12 @@ ConnectDialog::ConnectDialog(int x, int y, Fl_Window* ptr, std::thread *thread, 
 
 	user = udata;
 
-	io = new boost::asio::io_service();
+	/*io = new boost::asio::io_service();
 	user->setIoClient(io);
 	tcp::resolver resolver(*io);
-	auto endpointIterator = resolver.resolve({ std::string(address->value()),port->value() });
-
-	user->setClient(new Client(*io, endpointIterator));
+	std::cout << port->value();
+	auto endpointIterator = resolver.resolve({ "",port->value() }); // temporary object, replaced later
+	user->setClient(new Client(*io, endpointIterator));*/
 
 	this->end();
 }

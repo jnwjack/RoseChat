@@ -41,6 +41,7 @@ void ChatWindow::setMainPage(Page *page)
 void ChatWindow::loginAndSwitchPage(const char *uname)
 {
 	username = uname;
+	user->setUsername(username);
 	main->show();
 	login->hide();
 	login->reset();
