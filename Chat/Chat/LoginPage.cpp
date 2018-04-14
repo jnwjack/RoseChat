@@ -38,7 +38,7 @@ void LoginPage::loginCallback(Fl_Widget *widget)
 
 		else
 		{
-			lBox->label("Didn't work nigga");
+			lBox->label("Didn't work");
 		}
 
 	}
